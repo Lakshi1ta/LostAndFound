@@ -1,0 +1,10 @@
+lost-found/
+├── index.html (Home)
+├── add-lost.html
+├── add-found.html
+├── view-items.html
+├── /css/
+│   └── style.css
+├── /js/
+│   ├── firebase-config.js
+│   └── app.js
