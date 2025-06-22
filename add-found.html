@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Lost Item - NoteNest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-semibold text-center text-gray-800 mb-6">Report Found Item</h2>
+    
+    <form id="foundForm" class="space-y-4" action="script.js">
+      <input type="text" id="itemName" placeholder="Item Name" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <input type="text" id="location" placeholder="Location Found" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <textarea id="description" placeholder="Description" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      <input type="text" id="contact" placeholder="Your Contact Info" required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">Submit</button>
+    </form>
+
+    <p id="successMsg" class="text-green-600 text-center hidden mt-4">Found item submitted successfully!</p>
+  </div>
+
+  <!-- <script src="firebase-config.js"></script> -->
+</body>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBVLYN7ZyT6BVJyi5IrtbZ_LiKOCD1cMUQ",
+      authDomain: "lostandfound-c5cc3.firebaseapp.com",
+      projectId: "lostandfound-c5cc3",
+      storageBucket: "lostandfound-c5cc3.firebasestorage.app",
+      messagingSenderId: "493880880100",
+      appId: "1:493880880100:web:94ba0302d280cfd8c1b5f1",
+      measurementId: "G-JV9WNW7PGZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("foundForm");
+      const successMsg = document.getElementById("successMsg");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const itemName = document.getElementById("itemName").value.trim();
+        const location = document.getElementById("location").value.trim();
+        const description = document.getElementById("description").value.trim();
+        const contact = document.getElementById("contact").value.trim();
+
+        if (!itemName || !location || !description || !contact) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        try {
+          await addDoc(collection(db, "foundItems"), {
+            itemName,
+            location,
+            description,
+            contact,
+            status: "Open",
+            createdAt: serverTimestamp()
+          });
+
+          successMsg.classList.remove("hidden");
+          successMsg.textContent = "✅ Submitted! Redirecting...";
+          form.reset();
+
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1500);
+
+        } catch (error) {
+          console.error("Error saving found item:", error);
+          alert("Failed to submit. Please try again.");
+        }
+    });
+});
+
+  </script>
+</html>
